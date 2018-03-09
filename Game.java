@@ -19,7 +19,7 @@ public class Game
 {
     private Parser parser;
     private Room currentRoom;
-        
+
     /**
      * Create the game and initialise its internal map.
      */
@@ -35,7 +35,7 @@ public class Game
     private void createRooms()
     {
         Room entradaSalida, corredor1, salaAgua, salaFuego, corredor2, corredor3, salaElectrica, salaLLave, corredor4, corredor5;
-      
+
         // create the rooms
         entradaSalida = new Room("Entrada (y salida) de la mazmorra");
         corredor1 = new Room("Corredor nº1");
@@ -47,18 +47,18 @@ public class Game
         salaLLave = new Room ("Sala del cofre");
         corredor4 = new Room("Corredor nº4");
         corredor5 = new Room("Corredor nº5");
-        
-        // initialise room exits (norte, este, sur, oeste)
-        entradaSalida.setExits(corredor1, null, null, null);
-        corredor1.setExits(null, salaFuego, entradaSalida, salaAgua);
-        salaAgua.setExits(corredor5, corredor1, null, null);
-        salaFuego.setExits(corredor2, null, null, corredor1);
-        corredor2.setExits(corredor3, null, salaFuego, null);
-        corredor3.setExits(null, salaElectrica, corredor2, salaLLave);
-        salaElectrica.setExits(null, null, null, corredor3);
-        salaLLave.setExits(null, corredor3, null, corredor4);
-        corredor4.setExits(null, salaLLave, corredor5, null);
-        corredor5.setExits(corredor4, null, salaAgua, null);
+
+        // initialise room exits (norte, este, sureste, sur, oeste)
+        entradaSalida.setExits(corredor1, null, null, null, null);
+        corredor1.setExits(null, salaFuego, null, entradaSalida, salaAgua);
+        salaAgua.setExits(corredor5, corredor1, entradaSalida, null, null);
+        salaFuego.setExits(corredor2, null, null, null, corredor1);
+        corredor2.setExits(corredor3, null, null, salaFuego, null);
+        corredor3.setExits(null, salaElectrica, null, corredor2, salaLLave);
+        salaElectrica.setExits(null, null, null, null, corredor3);
+        salaLLave.setExits(null, corredor3, null, null, corredor4);
+        corredor4.setExits(null, salaLLave, null, corredor5, null);
+        corredor5.setExits(corredor4, null, corredor1, salaAgua, null);
 
         // start game outside
         currentRoom = entradaSalida;
@@ -161,6 +161,9 @@ public class Game
         if(direction.equals("east")) {
             nextRoom = currentRoom.eastExit;
         }
+        if(direction.equals("south-east")) {
+            nextRoom = currentRoom.southEastExit;
+        }
         if(direction.equals("south")) {
             nextRoom = currentRoom.southExit;
         }
@@ -205,6 +208,9 @@ public class Game
         }
         if(currentRoom.eastExit != null) {
             System.out.print("east ");
+        }
+        if(currentRoom.southEastExit != null) {
+            System.out.print("south-east ");
         }
         if(currentRoom.southExit != null) {
             System.out.print("south ");
