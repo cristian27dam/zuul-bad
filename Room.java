@@ -25,6 +25,7 @@ public class Room
      * Create a room described "description". Initially, it has
      * no exits. "description" is something like "a kitchen" or
      * "an open court yard".
+     * 
      * @param description The room's description.
      */
     public Room(String description) 
@@ -34,25 +35,15 @@ public class Room
     }
 
     /**
-     * Define the exits of this room.  Every direction either leads
-     * to another room or is null (no exit there).
-     * @param north The north exit.
-     * @param east The east east.
-     * @param southEast The south-east exit.
-     * @param south The south exit.
-     * @param west The west exit.
-     * @param northWest The north-west exit.
+     * Metodo para mapear cada salida posible de la sala de forma individual
+     * y asi poder "inventar" direcciones desde la clase Game.
+     * 
+     * @param   direccion   La direccion de la salida de la sala.
+     * @param   Room        La sala de destino.
      */
-    public void setExits(Room north, Room east, Room southEast, Room south, Room west, Room northWest) 
+    public void setSalidaIndividual(String direccion, Room nuevaSalida) 
     {   
-        // Arrays de las direcciones que contemplamos
-        String[] direcciones = {"north", "east", "south-east", "south", "west", "north-west"};
-        // Salas existentes en cada direccion
-        Room[] salasPosibles = {north, east, southEast, south, west, northWest};
-        
-        for (int i = 0; i < direcciones.length; i++){
-            salidasPosibles.put(direcciones[i], salasPosibles[i]);
-        }
+        salidasPosibles.put(direccion, nuevaSalida);
     }
 
     /**
@@ -68,7 +59,7 @@ public class Room
     /**
      * Metodo que devuelve la sala asociada a la direccion indicada por el jugador
      * 
-     * @param   Un string que indica la direccion indicada por el jugador.
+     * @param   Un String que indica la direccion indicada por el jugador.
      * @return  Un objeto Room que representa una sala existente en dicha direccion o null en caso contrario.
      */
     public Room getExit(String direccion){
@@ -78,10 +69,9 @@ public class Room
     }
 
     /**
-     * Return a description of the room's exits.
-     * For example: "Exits: north east west"
+     * Metodo que concatena el String de salidas posibles desde la sala actual.
      *
-     * @return A description of the available exits.
+     * @return Un String informando de la salidas disponibles desde la posicion actual.
      */
     public String getExitString(){
         String salidasADevolver = "";

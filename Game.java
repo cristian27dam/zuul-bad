@@ -36,36 +36,54 @@ public class Game
     {
         Room entradaSalida, corredor1, salaAgua, salaFuego, corredor2, corredor3, salaElectrica, salaLLave, corredor4, corredor5;
 
-        // create the rooms
-        entradaSalida = new Room("Entrada (y salida) de la mazmorra");
-        corredor1 = new Room("Corredor nº1");
-        salaAgua = new Room("Sala de conductos de agua");
-        salaFuego = new Room("Sala en llamas");
-        corredor2 = new Room("Corredor nº2");
-        corredor3 = new Room("Corredor nº3");
-        salaElectrica = new Room("Sala de energía eléctrica");
-        salaLLave = new Room ("Sala del cofre");
-        corredor4 = new Room("Corredor nº4");
-        corredor5 = new Room("Corredor nº5");
+        // Inicializacion de las salas de la mazmorra con su descripcion
+        entradaSalida = new Room("Estas confundido y mareado.. Ves una puerta cerrada detras de ti.. \nNotas algo de humedad en el ambiente.." );
+        corredor1 = new Room("Un pasadizo donde se escucha ruido cerca..");
+        salaAgua = new Room("Te encuentras en una sala llena de canyerias desde donde parece \n que se puede controlar el sistema hidraulico de este lugar..");
+        salaFuego = new Room("En esta sala ves llamas por todas partes y resulta sofocante estar mucho tiempo aqui..");
+        corredor2 = new Room("Un pasadizo con extranyos simbolos dibujados en la pared..\nEn el techo puedes ver una trampilla con un gran simbolo iluminado");
+        corredor3 = new Room("A tu alrededor hay objetos que parecen demasiado modernos para este sitio \n que tienen grabados parecidos a los que has visto..");
+        salaElectrica = new Room("Parece una antigua sala desde donde gestionaban la energia.. \nVes maquinas de todo tipo que desconoces..");
+        salaLLave = new Room ("Puede que aqui encuentres algo que te ayude a salir de este lugar.. \nVes un pilar con una hendidura conocida..");
+        corredor4 = new Room("Los dibujos de las paredes ahora parecen brillar...");
+        corredor5 = new Room("Parece que este lugar comunica con la sala de control de agua \nporque recuerdas ese sonido con claridad..");
 
-        // initialise room exits (norte, este, sureste, sur, oeste, noroeste)
-        entradaSalida.setExits(corredor1, null, null, null, null, salaAgua);
-        corredor1.setExits(null, salaFuego, null, entradaSalida, salaAgua, corredor5);
-        salaAgua.setExits(corredor5, corredor1, entradaSalida, null, null, null);
-        salaFuego.setExits(corredor2, null, null, null, corredor1, null);
-        corredor2.setExits(corredor3, null, null, salaFuego, null, null);
-        corredor3.setExits(null, salaElectrica, null, corredor2, salaLLave, null);
-        salaElectrica.setExits(null, null, null, null, corredor3, null);
-        salaLLave.setExits(null, corredor3, null, null, corredor4, null);
-        corredor4.setExits(null, salaLLave, null, corredor5, null, null);
-        corredor5.setExits(corredor4, null, corredor1, salaAgua, null, null);
-
-        // start game outside
+        // Mapeo de cada sala con sus posibles salidas al momento de creacion
+        entradaSalida.setSalidaIndividual("north", corredor1);
+        entradaSalida.setSalidaIndividual("north-west", salaAgua);
+        corredor1.setSalidaIndividual("west", salaAgua);
+        corredor1.setSalidaIndividual("east", salaFuego);
+        salaAgua.setSalidaIndividual("east", corredor1);
+        salaAgua.setSalidaIndividual("south-east", entradaSalida);
+        salaFuego.setSalidaIndividual("west", corredor1);
+        salaFuego.setSalidaIndividual("north", corredor2);
+        corredor2.setSalidaIndividual("north", corredor3);
+        corredor2.setSalidaIndividual("south", salaFuego);
+        corredor3.setSalidaIndividual("south", corredor2);
+        corredor3.setSalidaIndividual("east", salaElectrica);
+        corredor3.setSalidaIndividual("west", salaLLave);
+        salaElectrica.setSalidaIndividual("west", corredor3);
+        salaLLave.setSalidaIndividual("east", corredor3);
+        salaLLave.setSalidaIndividual("west", corredor4);
+        corredor4.setSalidaIndividual("east", salaLLave);
+        corredor4.setSalidaIndividual("south", corredor5);
+        corredor5.setSalidaIndividual("north", corredor4);
+        corredor5.setSalidaIndividual("south", salaAgua);
+        corredor5.setSalidaIndividual("south-east", corredor1);
+        
+        // Por mi planteamiento del mapa y sus "mecanicas" no se pueden mapear estas posibles direcciones
+        // a pesar de que existan pero como no tenemos nada implementado las especifico igualmente
+        salaAgua.setSalidaIndividual("north", corredor5);
+        corredor1.setSalidaIndividual("north-west", corredor5);
+        
+        // Sala donde empieza el jugador
         currentRoom = entradaSalida;
     }
 
     /**
-     *  Main play routine.  Loops until end of play.
+     *  Metodo que controla el inicio y fin del juego alternando entre recibir y comprobar si el comando
+     *  introducido es valido y en ese caso invocar los metodos oportunos, ya sea goRoom() (moverse), 
+     *  printHelp() (ayuda al usuario) o invertir la variable finished usando "quit".
      */
     public void play() 
     {            
@@ -88,9 +106,9 @@ public class Game
     private void printWelcome()
     {
         System.out.println();
-        System.out.println("Welcome to the World of Zuul!");
-        System.out.println("World of Zuul is a new, incredibly boring adventure game.");
-        System.out.println("Type 'help' if you need help.");
+        System.out.println("Bienvenido a World of Signs!");
+        System.out.println("World of Signs es un simple juego adaptado para nuestra clase de Java! ^^");
+        System.out.println("Escribe 'help' para mas informacion.");
         System.out.println();
         printLocationInfo(); // Imprime localizacion y posibles salidas
     }
@@ -187,8 +205,8 @@ public class Game
      * e imprime las posibles salidas desde ese punto actual.
      */
     private void printLocationInfo(){
-        System.out.println("Te encuentras en: " + currentRoom.getDescription());
-        System.out.print("Exits: ");
+        System.out.println(currentRoom.getDescription());
+        System.out.print("Salidas: ");
         System.out.println(currentRoom.getExitString()); // Cadena para las salidas disponibles
     }
 }
