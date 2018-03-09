@@ -13,13 +13,16 @@
  * @version 2011.07.31
  */
 public class Room 
-{
+{   
+    // Descripcion de la sala actual del jugador
     private String description;
+    // Salidas posibles de la sala en 6 direcciones
     private Room northExit;
     private Room southExit;
     private Room eastExit;
     private Room westExit;
     private Room southEastExit;
+    private Room northWestExit;
 
     /**
      * Create a room described "description". Initially, it has
@@ -40,23 +43,33 @@ public class Room
      * @param southEast The south-east exit.
      * @param south The south exit.
      * @param west The west exit.
+     * @param northWest The north-west exit.
      */
-    public void setExits(Room north, Room east, Room southEast, Room south, Room west) 
+    public void setExits(Room north, Room east, Room southEast, Room south, Room west, Room northWest) 
     {
-        if(north != null)
+        if(north != null){
             northExit = north;
-        if(east != null)
+        }
+        if(east != null){
             eastExit = east;
-        if (southEast != null)
+        }
+        if (southEast != null){
             southEastExit = southEast;
-        if(south != null)
+        }
+        if(south != null){
             southExit = south;
-        if(west != null)
+        }
+        if(west != null){
             westExit = west;
-
+        }
+        if (northWest != null){
+            northWestExit = northWest;
+        }
     }
 
     /**
+     * Devuelve la descripcion de la sala actual.
+     * 
      * @return The description of the room.
      */
     public String getDescription()
@@ -65,7 +78,10 @@ public class Room
     }
 
     /**
+     * Metodo que devuelve la sala asociada a la direccion indicada por el jugador
      * 
+     * @param   Un string que indica la direccion indicada por el jugador.
+     * @return  Un objeto Room que representa una sala existente o null en caso contrario.
      */
     public Room getExit(String direccion){
         Room salidaADevolver = null;
@@ -73,17 +89,20 @@ public class Room
         if (direccion.equals("north")){
             salidaADevolver = northExit;
         }
-        if (direccion.equals("south")){
-            salidaADevolver = southExit;
-        }
         if (direccion.equals("east")){
             salidaADevolver = eastExit;
+        }
+        if (direccion.equals("south-east")){
+            salidaADevolver = southEastExit;
+        }
+        if (direccion.equals("south")){
+            salidaADevolver = southExit;
         }
         if (direccion.equals("west")){
             salidaADevolver = westExit;
         }
-        if (direccion.equals("south-east")){
-            salidaADevolver = southEastExit;
+        if (direccion.equals("north-west")){
+            salidaADevolver = northWestExit;
         }
 
         return salidaADevolver;        
@@ -98,6 +117,7 @@ public class Room
     public String getExitString(){
         String salidasADevolver = "";
         
+        // Se concatenan las salidas posibles de la sala actual
         if (northExit != null){
             salidasADevolver += "north ";
         }
@@ -112,6 +132,9 @@ public class Room
         }
         if (westExit != null){
             salidasADevolver += "west ";
+        }
+        if (northWestExit != null){
+            salidasADevolver += "north-west ";
         }
         
         return salidasADevolver;

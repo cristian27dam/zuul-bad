@@ -48,17 +48,17 @@ public class Game
         corredor4 = new Room("Corredor nº4");
         corredor5 = new Room("Corredor nº5");
 
-        // initialise room exits (norte, este, sureste, sur, oeste)
-        entradaSalida.setExits(corredor1, null, null, null, null);
-        corredor1.setExits(null, salaFuego, null, entradaSalida, salaAgua);
-        salaAgua.setExits(corredor5, corredor1, entradaSalida, null, null);
-        salaFuego.setExits(corredor2, null, null, null, corredor1);
-        corredor2.setExits(corredor3, null, null, salaFuego, null);
-        corredor3.setExits(null, salaElectrica, null, corredor2, salaLLave);
-        salaElectrica.setExits(null, null, null, null, corredor3);
-        salaLLave.setExits(null, corredor3, null, null, corredor4);
-        corredor4.setExits(null, salaLLave, null, corredor5, null);
-        corredor5.setExits(corredor4, null, corredor1, salaAgua, null);
+        // initialise room exits (norte, este, sureste, sur, oeste, noroeste)
+        entradaSalida.setExits(corredor1, null, null, null, null, salaAgua);
+        corredor1.setExits(null, salaFuego, null, entradaSalida, salaAgua, corredor5);
+        salaAgua.setExits(corredor5, corredor1, entradaSalida, null, null, null);
+        salaFuego.setExits(corredor2, null, null, null, corredor1, null);
+        corredor2.setExits(corredor3, null, null, salaFuego, null, null);
+        corredor3.setExits(null, salaElectrica, null, corredor2, salaLLave, null);
+        salaElectrica.setExits(null, null, null, null, corredor3, null);
+        salaLLave.setExits(null, corredor3, null, null, corredor4, null);
+        corredor4.setExits(null, salaLLave, null, corredor5, null, null);
+        corredor5.setExits(corredor4, null, corredor1, salaAgua, null, null);
 
         // start game outside
         currentRoom = entradaSalida;
@@ -132,10 +132,10 @@ public class Game
      */
     private void printHelp() 
     {
-        System.out.println("You are lost. You are alone. You wander");
-        System.out.println("around at the university.");
+        System.out.println("Te despiertas en una mazmorra. No sabes que ha pasado..");
+        System.out.println("pero tienes que salir de ahí..");
         System.out.println();
-        System.out.println("Your command words are:");
+        System.out.println("Los comandos disponibles son:");
         System.out.println("   go quit help");
     }
 
@@ -150,28 +150,13 @@ public class Game
             System.out.println("Go where?");
             return;
         }
-
+        
+        // La direccion que solicita el usuario
         String direction = command.getSecondWord();
 
         // Try to leave current room.
         Room nextRoom = currentRoom.getExit(direction);
         
-        // if(direction.equals("north")) {
-            // nextRoom = currentRoom.northExit;
-        // }
-        // if(direction.equals("east")) {
-            // nextRoom = currentRoom.eastExit;
-        // }
-        // if(direction.equals("south-east")) {
-            // nextRoom = currentRoom.southEastExit;
-        // }
-        // if(direction.equals("south")) {
-            // nextRoom = currentRoom.southExit;
-        // }
-        // if(direction.equals("west")) {
-            // nextRoom = currentRoom.westExit;
-        // }
-
         if (nextRoom == null) {
             System.out.println("There is no door!");
         }
