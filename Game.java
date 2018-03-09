@@ -34,23 +34,34 @@ public class Game
      */
     private void createRooms()
     {
-        Room outside, theater, pub, lab, office;
+        Room entradaSalida, corredor1, salaAgua, salaFuego, corredor2, corredor3, salaElectrica, salaLLave, corredor4, corredor5;
       
         // create the rooms
-        outside = new Room("outside the main entrance of the university");
-        theater = new Room("in a lecture theater");
-        pub = new Room("in the campus pub");
-        lab = new Room("in a computing lab");
-        office = new Room("in the computing admin office");
+        entradaSalida = new Room("Entrada (y salida) de la mazmorra");
+        corredor1 = new Room("Corredor nº1");
+        salaAgua = new Room("Sala de conductos de agua");
+        salaFuego = new Room("Sala en llamas");
+        corredor2 = new Room("Corredor nº2");
+        corredor3 = new Room("Corredor nº3");
+        salaElectrica = new Room("Sala de energía eléctrica");
+        salaLLave = new Room ("Sala del cofre");
+        corredor4 = new Room("Corredor nº4");
+        corredor5 = new Room("Corredor nº5");
         
-        // initialise room exits
-        outside.setExits(null, theater, lab, pub);
-        theater.setExits(null, null, null, outside);
-        pub.setExits(null, outside, null, null);
-        lab.setExits(outside, office, null, null);
-        office.setExits(null, null, null, lab);
+        // initialise room exits (norte, este, sur, oeste)
+        entradaSalida.setExits(corredor1, null, null, null);
+        corredor1.setExits(null, salaFuego, entradaSalida, salaAgua);
+        salaAgua.setExits(corredor5, corredor1, null, null);
+        salaFuego.setExits(corredor2, null, null, corredor1);
+        corredor2.setExits(corredor3, null, salaFuego, null);
+        corredor3.setExits(null, salaElectrica, corredor2, salaLLave);
+        salaElectrica.setExits(null, null, null, corredor3);
+        salaLLave.setExits(null, corredor3, null, corredor4);
+        corredor4.setExits(null, salaLLave, corredor5, null);
+        corredor5.setExits(corredor4, null, salaAgua, null);
 
-        currentRoom = outside;  // start game outside
+        // start game outside
+        currentRoom = entradaSalida;
     }
 
     /**
@@ -81,7 +92,7 @@ public class Game
         System.out.println("World of Zuul is a new, incredibly boring adventure game.");
         System.out.println("Type 'help' if you need help.");
         System.out.println();
-        System.out.println("You are " + currentRoom.getDescription());
+        System.out.println("Te encuentras en: " + currentRoom.getDescription());
         System.out.print("Exits: ");
         if(currentRoom.northExit != null) {
             System.out.print("north ");
@@ -176,7 +187,7 @@ public class Game
         }
         else {
             currentRoom = nextRoom;
-            System.out.println("You are " + currentRoom.getDescription());
+            System.out.println("Estas en \"" + currentRoom.getDescription() + "\"");
             System.out.print("Exits: ");
             if(currentRoom.northExit != null) {
                 System.out.print("north ");
