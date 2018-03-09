@@ -1,3 +1,5 @@
+import java.util.HashMap;
+
 /**
  * Class Room - a room in an adventure game.
  *
@@ -16,13 +18,8 @@ public class Room
 {   
     // Descripcion de la sala actual del jugador
     private String description;
-    // Salidas posibles de la sala en 6 direcciones
-    private Room northExit;
-    private Room southExit;
-    private Room eastExit;
-    private Room westExit;
-    private Room southEastExit;
-    private Room northWestExit;
+    // HashMap para las salidas posibles de la sala
+    private HashMap<String, Room> salidasPosibles;
 
     /**
      * Create a room described "description". Initially, it has
@@ -33,6 +30,7 @@ public class Room
     public Room(String description) 
     {
         this.description = description;
+        salidasPosibles = new HashMap<>();
     }
 
     /**
@@ -46,24 +44,14 @@ public class Room
      * @param northWest The north-west exit.
      */
     public void setExits(Room north, Room east, Room southEast, Room south, Room west, Room northWest) 
-    {
-        if(north != null){
-            northExit = north;
-        }
-        if(east != null){
-            eastExit = east;
-        }
-        if (southEast != null){
-            southEastExit = southEast;
-        }
-        if(south != null){
-            southExit = south;
-        }
-        if(west != null){
-            westExit = west;
-        }
-        if (northWest != null){
-            northWestExit = northWest;
+    {   
+        // Arrays de las direcciones que contemplamos
+        String[] direcciones = {"north", "east", "south-east", "south", "west", "north-west"};
+        // Salas existentes en cada direccion
+        Room[] salasPosibles = {north, east, southEast, south, west, northWest};
+        
+        for (int i = 0; i < direcciones.length; i++){
+            salidasPosibles.put(direcciones[i], salasPosibles[i]);
         }
     }
 
@@ -81,29 +69,10 @@ public class Room
      * Metodo que devuelve la sala asociada a la direccion indicada por el jugador
      * 
      * @param   Un string que indica la direccion indicada por el jugador.
-     * @return  Un objeto Room que representa una sala existente o null en caso contrario.
+     * @return  Un objeto Room que representa una sala existente en dicha direccion o null en caso contrario.
      */
     public Room getExit(String direccion){
-        Room salidaADevolver = null;
-
-        if (direccion.equals("north")){
-            salidaADevolver = northExit;
-        }
-        if (direccion.equals("east")){
-            salidaADevolver = eastExit;
-        }
-        if (direccion.equals("south-east")){
-            salidaADevolver = southEastExit;
-        }
-        if (direccion.equals("south")){
-            salidaADevolver = southExit;
-        }
-        if (direccion.equals("west")){
-            salidaADevolver = westExit;
-        }
-        if (direccion.equals("north-west")){
-            salidaADevolver = northWestExit;
-        }
+        Room salidaADevolver = salidasPosibles.get(direccion);
 
         return salidaADevolver;        
     }
@@ -118,25 +87,12 @@ public class Room
         String salidasADevolver = "";
         
         // Se concatenan las salidas posibles de la sala actual
-        if (northExit != null){
-            salidasADevolver += "north ";
+        for(String salidaPosible : salidasPosibles.keySet()){
+            if (salidasPosibles.get(salidaPosible) != null){
+                salidasADevolver += salidaPosible + " ";
+            }
         }
-        if (eastExit != null){
-            salidasADevolver += "east ";
-        }
-        if (southEastExit != null){
-            salidasADevolver += "south-east ";
-        }
-        if (southExit != null){
-            salidasADevolver += "south ";
-        }
-        if (westExit != null){
-            salidasADevolver += "west ";
-        }
-        if (northWestExit != null){
-            salidasADevolver += "north-west ";
-        }
-        
-        return salidasADevolver;
+
+        return salidasADevolver.trim();
     }
 }
