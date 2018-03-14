@@ -64,10 +64,10 @@ public class Parser
     }
 
     /**
-     * Imprime una lista de las palabras de comando validas
+     * Devuelve un String con los comandos disponibles actualmente.
      */
-    public void showCommands()
+    public String showCommands()
     {
-        commands.showAll();
+        return commands.getCommandList();
     }
 }

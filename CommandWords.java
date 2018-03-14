@@ -40,14 +40,16 @@ public class CommandWords
     }
 
     /**
-     * Imprime por pantalla todos los comandos validos
+     * Devuelve un String con todos los comandos validos
      * disponibles actualmente en el juego.
      */
-    public void showAll()
-    {
+    public String getCommandList()
+    {   
+        String comandosDisponibles = "";
         for (String command : validCommands) {
-            System.out.print(command + " ");
+            comandosDisponibles += command + " ";
         }
-        System.out.println();
+        
+        return comandosDisponibles.trim();
     }
 }

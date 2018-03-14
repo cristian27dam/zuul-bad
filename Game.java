@@ -160,7 +160,7 @@ public class Game
         System.out.println("pero tienes que salir de ahí..");
         System.out.println();
         System.out.println("Los comandos disponibles son:");
-        parser.showCommands(); // Imprime tantos comandos como existan en la clase CommandWords
+        System.out.println(parser.showCommands()); // Imprime tantos comandos como existan en la clase CommandWords
     }
 
     /** 
