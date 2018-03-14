@@ -160,7 +160,7 @@ public class Game
         System.out.println("pero tienes que salir de ahí..");
         System.out.println();
         System.out.println("Los comandos disponibles son:");
-        System.out.println("   go quit help");
+        parser.showCommands(); // Imprime tantos comandos como existan en la clase CommandWords
     }
 
     /** 
@@ -213,11 +213,19 @@ public class Game
     private void printLocationInfo(){
         System.out.println(currentRoom.getLongDescription());
     }
-
+    
+    /**
+     * Metodo privado que nos permite imprimir la descripcion y salidas posibles
+     * de la sala actual en la que esta el jugador
+     */
     private void look(){
         System.out.println(currentRoom.getLongDescription());
     }
     
+    /**
+     * Metodo privado que nos permite simular que el personaje ha comido
+     * y se ha aumentando un valor ficticio de "cantidad de hambre".
+     */
     private void eat(){
         System.out.println("Acabas de comer y ya no tienes hambre");
     }
