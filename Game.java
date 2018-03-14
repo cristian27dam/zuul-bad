@@ -70,12 +70,12 @@ public class Game
         corredor5.setSalidaIndividual("north", corredor4);
         corredor5.setSalidaIndividual("south", salaAgua);
         corredor5.setSalidaIndividual("south-east", corredor1);
-        
+
         // Por mi planteamiento del mapa y sus "mecanicas" no se pueden mapear estas posibles direcciones
         // a pesar de que existan pero como no tenemos nada implementado las especifico igualmente
         salaAgua.setSalidaIndividual("north", corredor5);
         corredor1.setSalidaIndividual("north-west", corredor5);
-        
+
         // Sala donde empieza el jugador
         currentRoom = entradaSalida;
     }
@@ -91,7 +91,7 @@ public class Game
 
         // Enter the main command loop.  Here we repeatedly read commands and
         // execute them until the game is over.
-                
+
         boolean finished = false;
         while (! finished) {
             Command command = parser.getCommand();
@@ -134,6 +134,9 @@ public class Game
         else if (commandWord.equals("go")) {
             goRoom(command);
         }
+        else if (commandWord.equals("look")){
+            look();
+        }
         else if (commandWord.equals("quit")) {
             wantToQuit = quit(command);
         }
@@ -168,13 +171,13 @@ public class Game
             System.out.println("Go where?");
             return;
         }
-        
+
         // La direccion que solicita el usuario
         String direction = command.getSecondWord();
 
         // Try to leave current room.
         Room nextRoom = currentRoom.getExit(direction);
-        
+
         if (nextRoom == null) {
             System.out.println("There is no door!");
         }
@@ -199,12 +202,16 @@ public class Game
             return true;  // signal that we want to quit
         }
     }
-    
+
     /**
      * Metodo privado que nos informa en que sala nos encontramos
      * e imprime las posibles salidas desde ese punto actual.
      */
     private void printLocationInfo(){
+        System.out.println(currentRoom.getLongDescription());
+    }
+
+    private void look(){
         System.out.println(currentRoom.getLongDescription());
     }
 }
