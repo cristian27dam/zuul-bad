@@ -20,6 +20,8 @@ public class Room
     private String description;
     // HashMap para las salidas posibles de la sala
     private HashMap<String, Room> salidasPosibles;
+    // Item que contiene la sala
+    private Item itemExistente;
 
     /**
      * Create a room described "description". Initially, it has
@@ -28,10 +30,11 @@ public class Room
      * 
      * @param description The room's description.
      */
-    public Room(String description) 
+    public Room(String description, Item itemExistente) 
     {
         this.description = description;
         salidasPosibles = new HashMap<>();
+        this.itemExistente = itemExistente;
     }
 
     /**
@@ -93,6 +96,11 @@ public class Room
      * @return A description of the room, including exits.
      */
     public String getLongDescription(){
-        return getDescription() + "\nSalidas ---> " + getExitString();
+        String descripcion = getDescription() + "\nSalidas ---> " + getExitString();
+        
+        if (itemExistente != null){
+            descripcion = getDescription() + "\nItems: " + itemExistente.getInfoItem() + "\nSalidas ---> " + getExitString();
+        }
+        return descripcion;
     }
 }
