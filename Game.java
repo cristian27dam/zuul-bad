@@ -19,6 +19,7 @@ public class Game
 {
     private Parser parser;
     private Room currentRoom;
+    private Room lastRoom;
 
     /**
      * Create the game and initialise its internal map.
@@ -27,6 +28,7 @@ public class Game
     {
         createRooms();
         parser = new Parser();
+        lastRoom = null;
     }
 
     /**
@@ -47,16 +49,17 @@ public class Game
         salaLLave = new Room ("Sala misteriosa: Puede que aqui encuentres algo que te ayude a salir de este lugar.. \nVes un pilar con una hendidura conocida..");
         corredor4 = new Room("Corredor 4: Los dibujos de las paredes ahora parecen brillar...");
         corredor5 = new Room("Corredor 5: Parece que este lugar comunica con la sala de control de agua \nporque recuerdas ese sonido con claridad..,");
-        
+
         // Inicializacion de los items de cada sala
         salaLLave.addItem(new Item("Parece que hay un cofre", 3000));
         corredor3.addItem(new Item("Hay una bateria tirada en una esquina", 1000));
         salaAgua.addItem(new Item("Hay una llave de paso que parece funcionar", 500));
         salaAgua.addItem(new Item("Hay un objeto brillante en una esquina", 500));
-        
+
         // Mapeo de cada salida de cada sala al momento de creacion
         entradaSalida.setSalidaIndividual("north", corredor1);
         entradaSalida.setSalidaIndividual("north-west", salaAgua);
+        corredor1.setSalidaIndividual("south", entradaSalida);
         corredor1.setSalidaIndividual("west", salaAgua);
         corredor1.setSalidaIndividual("east", salaFuego);
         salaAgua.setSalidaIndividual("east", corredor1);
@@ -138,6 +141,8 @@ public class Game
             printHelp();
         }
         else if (commandWord.equals("go")) {
+            // Almacenamos la sala actual para tener su referencia si queremos hacer backvisitadas
+            lastRoom = currentRoom;
             goRoom(command);
         }
         else if (commandWord.equals("look")){
@@ -148,6 +153,16 @@ public class Game
         }
         else if (commandWord.equals("quit")) {
             wantToQuit = quit(command);
+        }
+        else{
+            if ((commandWord.equals("back") && lastRoom != null)){
+                currentRoom = lastRoom;
+                lastRoom = null;
+            }
+            else{
+                System.out.println("¡No puedes volver atras, tienes que moverte primero!");
+            }
+            printLocationInfo();
         }
 
         return wantToQuit;
@@ -219,7 +234,7 @@ public class Game
     private void printLocationInfo(){
         System.out.println(currentRoom.getLongDescription());
     }
-    
+
     /**
      * Metodo privado que nos permite imprimir la descripcion y salidas posibles
      * de la sala actual en la que esta el jugador
@@ -227,7 +242,7 @@ public class Game
     private void look(){
         System.out.println(currentRoom.getLongDescription());
     }
-    
+
     /**
      * Metodo privado que nos permite simular que el personaje ha comido
      * y se ha aumentando un valor ficticio de "cantidad de hambre".
