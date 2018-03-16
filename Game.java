@@ -1,3 +1,5 @@
+import java.util.Stack;
+
 /**
  *  This class is the main class of the "World of Zuul" application. 
  *  "World of Zuul" is a very simple, text based adventure game.  Users 
@@ -19,7 +21,7 @@ public class Game
 {
     private Parser parser;
     private Room currentRoom;
-    private Room lastRoom;
+    private Stack<Room> visitedRooms;
 
     /**
      * Create the game and initialise its internal map.
@@ -28,7 +30,7 @@ public class Game
     {
         createRooms();
         parser = new Parser();
-        lastRoom = null;
+        visitedRooms = new Stack();
     }
 
     /**
@@ -141,8 +143,6 @@ public class Game
             printHelp();
         }
         else if (commandWord.equals("go")) {
-            // Almacenamos la sala actual para tener su referencia si queremos hacer backvisitadas
-            lastRoom = currentRoom;
             goRoom(command);
         }
         else if (commandWord.equals("look")){
@@ -155,9 +155,10 @@ public class Game
             wantToQuit = quit(command);
         }
         else{
-            if ((commandWord.equals("back") && lastRoom != null)){
-                currentRoom = lastRoom;
-                lastRoom = null;
+            if ((commandWord.equals("back") && !visitedRooms.empty())){
+                // Almacenamos la ultima sala apilada en el Stack de habitaciones
+                // visitadas y la borramos del historial
+                currentRoom = visitedRooms.pop();
             }
             else{
                 System.out.println("¡No puedes volver atras, tienes que moverte primero!");
@@ -206,8 +207,12 @@ public class Game
             System.out.println("There is no door!");
         }
         else {
+            // Apilamos la sala actual en el Stack de salas visitadas antes de movernos
+            // cuando la sala a la que moverse exista y asi poder ejecutar back a ella
+            visitedRooms.push(currentRoom);
             currentRoom = nextRoom;
             printLocationInfo(); // Imprime localizacion y posibles salidas
+            
         }
     }
 
