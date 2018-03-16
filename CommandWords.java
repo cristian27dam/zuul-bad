@@ -42,6 +42,8 @@ public class CommandWords
     /**
      * Devuelve un String con todos los comandos validos
      * disponibles actualmente en el juego.
+     * 
+     * @return String con los comandos validos disponibles
      */
     public String getCommandList()
     {   

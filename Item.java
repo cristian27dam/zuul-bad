@@ -11,6 +11,8 @@ public class Item
     private int itemWeight;
     /**
      * Contructor de objetos Item
+     * 
+     * @param   itemDescription
      */
     public Item(String itemDescription, int itemWeight)
     {
@@ -20,6 +22,8 @@ public class Item
 
     /**
      * Getter para la descripcion del Item
+     * 
+     * @return  Un String con la descripcion del Item
      */
     public String getItemDescription(){
         return itemDescription;
@@ -27,6 +31,8 @@ public class Item
     
     /**
      * Getter para el peso del Item
+     * 
+     * @return Un entero que representa el peso del Item
      */
     public int getItemWeight(){
         return itemWeight;
@@ -34,8 +40,10 @@ public class Item
     
     /**
      * Metodo para devolver la informacion del Item
+     * 
+     * @return  Un string con la desripcion del item
      */
     public String getInfoItem(){
-        return getItemDescription() + "Peso: " + getItemWeight();
+        return getItemDescription() + " Peso: " + getItemWeight();
     }
 }
