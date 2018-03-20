@@ -1,4 +1,5 @@
 import java.util.Stack;
+import java.util.ArrayList;
 
 /**
  *  This class is the main class of the "World of Zuul" application. 
@@ -20,9 +21,16 @@ import java.util.Stack;
 public class Game 
 {
     private Parser parser;
+    // Sala actual
     private Room currentRoom;
+    // Stack de salas visitadas
     private Stack<Room> visitedRooms;
-
+    // Inventario de items del jugador
+    private ArrayList<Item> playerItems;
+    // Peso actual del inventario
+    private int pesoActual;
+    // Constante que define el limite de peso
+    private final int LIMITE_CARGA = 1300;
     /**
      * Create the game and initialise its internal map.
      */
@@ -31,6 +39,8 @@ public class Game
         createRooms();
         parser = new Parser();
         visitedRooms = new Stack();
+        playerItems = new ArrayList();
+        pesoActual = 0;
     }
 
     /**
@@ -53,11 +63,14 @@ public class Game
         corredor5 = new Room("Corredor 5: Parece que este lugar comunica con la sala de control de agua \nporque recuerdas ese sonido con claridad..,");
 
         // Inicializacion de los items de cada sala
-        salaLLave.addItem(new Item("Parece que hay un cofre", 3000));
-        corredor3.addItem(new Item("Hay una bateria tirada en una esquina", 1000));
-        salaAgua.addItem(new Item("Hay una llave de paso que parece funcionar", 500));
-        salaAgua.addItem(new Item("Hay un objeto brillante en una esquina", 500));
-
+        salaLLave.addItem(new Item("Parece que hay un cofre", 3000, "Cofre", false));
+        corredor3.addItem(new Item("Hay una bateria tirada en una esquina", 1000, "Bateria", true));
+        salaAgua.addItem(new Item("Hay una llave de paso que parece funcionar", 500, "LLave de paso", false));
+        salaAgua.addItem(new Item("Hay un objeto brillante en una esquina", 500, "Amuleto", true));
+        corredor5.addItem(new Item("Parece que hay una carta medio quemada sobre una mesa", 200, "Carta",true));
+        salaElectrica.addItem(new Item("Una llave sobresale de una muesca de uno de los pilares de la sala", 300, "LLave del cofre", true));
+        salaLLave.addItem(new Item("Otra llave con los simbolos que has visto cuelga de la pared", 300, "LLave desconocida",true));
+        
         // Mapeo de cada salida de cada sala al momento de creacion
         entradaSalida.setSalidaIndividual("north", corredor1);
         entradaSalida.setSalidaIndividual("north-west", salaAgua);
@@ -154,6 +167,15 @@ public class Game
         else if (commandWord.equals("quit")) {
             wantToQuit = quit(command);
         }
+        else if (commandWord.equals("items")) {
+            showItems();
+        }
+        else if(commandWord.equals("take")){
+            take(command.getSecondWord());
+        }
+        else if(commandWord.equals("drop")){
+            drop(command.getSecondWord());
+        }
         else{
             if ((commandWord.equals("back") && !visitedRooms.empty())){
                 // Almacenamos la ultima sala apilada en el Stack de habitaciones
@@ -212,7 +234,7 @@ public class Game
             visitedRooms.push(currentRoom);
             currentRoom = nextRoom;
             printLocationInfo(); // Imprime localizacion y posibles salidas
-            
+
         }
     }
 
@@ -254,5 +276,127 @@ public class Game
      */
     private void eat(){
         System.out.println("Acabas de comer y ya no tienes hambre");
+    }
+    
+    /**
+     * Metodo que nos permite mostrar por pantalla informacion relacionada con los items del inventario y el peso actual.
+     */
+    private void showItems(){
+        if (!playerItems.isEmpty()){
+            String listadoItems = "";
+            int contador;
+            contador = 1;
+            for (Item item : playerItems){
+                listadoItems += "\n" + contador + " [" + item.getItemName() + "] " + " " + item.getItemDescription();
+                contador++;
+            }
+            System.out.println("Tu inventario contiene:\n" + listadoItems.trim());
+        }
+        else{
+            System.out.println("¡No tienes ningun item en tu inventario actualmente!");
+        }
+        System.out.println("El peso actual del inventario es: " + getPesoActual() + "/1300");
+    }
+
+    /**
+     * Metodo que permite recoger un item de la sala actual donde se encuentra el jugador.
+     * 
+     * @param   String  El nombre que aparece en el listado por pantalla de la informacion de la sala.
+     */
+    private void take(String itemIndicado){
+        Item posibleItem = null;
+        // Si el criterio introducido es un numero
+        if (controlDatos(itemIndicado) == true ){
+            // Si el array de items contiene algo
+            if (!currentRoom.getItems().isEmpty()){
+                // Si el indice solicitado del Array es valido
+                if (Integer.parseInt(itemIndicado) -1  >= 0 && Integer.parseInt(itemIndicado) -1 < currentRoom.getItems().size()){
+                    posibleItem = currentRoom.recogerItem(Integer.parseInt(itemIndicado) - 1);
+                    // Evalua si se puede coger y si la suma de su peso supera el limite
+                    if (posibleItem.getManipulable() == true && (posibleItem.getItemWeight() + pesoActual < LIMITE_CARGA)){
+                        playerItems.add(posibleItem);
+                        pesoActual += posibleItem.getItemWeight();
+                        currentRoom.getItems().remove(posibleItem);
+                        System.out.println("Has recogido el item: " + posibleItem.getItemName());
+                        System.out.println("El peso actual del inventario es: " + getPesoActual() + "/1300");
+                    }
+                    // El item no es manipulable
+                    else if(posibleItem.getManipulable() == false){
+                        System.out.println("¡Este item no se puede manipular!");
+                    }
+                    else{
+                        System.out.println("No puedes cargar con ese item, superas tu limite de carga");
+                        System.out.println("El peso actual del inventario es: " + getPesoActual() + "/1300");
+                    }
+                }
+                else{
+                    System.out.println("¡No existe el item seleccionado en la sala actual!");
+                }
+            }
+            // En caso de que no exista el item indicado
+            else{
+                System.out.println("¡No hay ningun item en la sala!");
+            }
+        }
+        else{
+            System.out.println("No ha introducido un patron de busqueda correcto");
+        }
+    }
+
+    /**
+     * Metodo que permite soltar items en la sala actual donde se encuentra el jugador.
+     * 
+     * @param String    Nombre del item que aparece en el listado por pantalla.
+     */
+    private void drop(String itemIndicado){
+        if (controlDatos(itemIndicado) == true){
+            if (!playerItems.isEmpty()){
+                if((Integer.parseInt(itemIndicado) -1  >= 0 && Integer.parseInt(itemIndicado) -1 < playerItems.size())){
+                    Item itemASoltar = playerItems.get(Integer.parseInt(itemIndicado) - 1);
+                    currentRoom.addItem(new Item(itemASoltar.getItemDescription(), itemASoltar.getItemWeight(), itemASoltar.getItemName(), itemASoltar.getManipulable()));
+                    System.out.println("Has dejado en la sala: " + itemASoltar.getItemName());
+                    pesoActual -= itemASoltar.getItemWeight();
+                    System.out.println("El peso actual del inventario es: " + getPesoActual() + "/1300");
+                    playerItems.remove(itemASoltar);
+                }
+                else{
+                    System.out.println("No existe el item seleccionado en tu inventario");
+                }
+            }
+            else{
+                System.out.println("No tienes ningun objeto en el invetario para soltar");
+            }
+        }
+        else{
+            System.out.println("No ha introducido un patron de busqueda correcto");
+        }
+    }
+
+    /**
+     * Metodo para evaluar si el patron usado para hacer take o drop es valido.
+     * Detecta si es parseable el criterio introducido para usarlo en el ArrayList de items de la sala.
+     * 
+     * @param   El String a parsear para comprobar que corresponde a un indice valido
+     * @return  True si se trata de un numero, false si no lo es
+     */
+    private boolean controlDatos(String posibleItem){
+        boolean itemCorrecto;
+        try {
+            Integer.parseInt(posibleItem);
+            itemCorrecto = true;
+        } catch (NumberFormatException excepcion) {
+            itemCorrecto = false;
+        }
+
+        return itemCorrecto;
+    }
+    
+    /**
+     * Getter del peso actual con los items del inventario
+     * 
+     * @return  Un entero que representa la suma de pesos de los items del inventario del jugador
+     */
+    private int getPesoActual(){
+        return pesoActual;
     }
 }

@@ -100,15 +100,18 @@ public class Room
     public String getLongDescription(){
         String descripcion = getDescription() + "\nSalidas ---> " + getExitString();
         String infoItems = "";
+        int contador;
+        contador = 1;
         if (!itemsExistentes.isEmpty()){
             for (Item itemSalaActual : itemsExistentes){
-                infoItems += "\nItem: " + itemSalaActual.getInfoItem();
+                infoItems += "\n" + contador + ". " + itemSalaActual.getInfoItem();
+                contador++;
             }
-            descripcion = getDescription() + infoItems + "\nSalidas ---> " + getExitString();
+            descripcion = getDescription() + "\nLos items disponibles son:" + infoItems + "\nSalidas ---> " + getExitString();
         }
         return descripcion;
     }
-    
+
     /**
      * Metodo que nos permite agregar tantos items como queramos a la sala actual
      * 
@@ -116,5 +119,25 @@ public class Room
      */
     public void addItem(Item nuevoItem){
         itemsExistentes.add(nuevoItem);
+    }
+
+    /**
+     * Metodo para devolver la coleccion de items de la sala actual y poder manipularla
+     * desde Game.
+     * 
+     * @return Un ArrayList con los items que se encuentran en la sala actual del jugador.
+     */
+    public ArrayList<Item> getItems(){
+        return itemsExistentes;
+    }
+    
+    /**
+     * Metodo que permite recoger un item de la sala actual si dicho item se puede obtener.
+     * 
+     * @param   indiceItem  Un indice que representa la posicion de un item en la lista de la sala actual.
+     * @return Devuelve un objeto Item.
+     */
+    public Item recogerItem(int indiceItem){
+        return itemsExistentes.get(indiceItem);
     }
 }
