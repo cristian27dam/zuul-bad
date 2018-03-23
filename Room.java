@@ -84,7 +84,7 @@ public class Room
         // Se concatenan las salidas posibles de la sala actual
         for(String salidaPosible : salidasPosibles.keySet()){
             if (salidasPosibles.get(salidaPosible) != null){
-                salidasADevolver += salidaPosible + " ";
+                salidasADevolver += "[" + salidaPosible + "]" + " ";
             }
         }
 
@@ -92,21 +92,24 @@ public class Room
     }
 
     /**
-     * Return a long description of this room, of the form:
-     *     You are in the 'name of room'
-     *     Exits: north west southwest
-     * @return A description of the room, including exits.
+     * Imprime por pantalla la informacion relacionada con la sala actual.
+     *     ==================
+     *     Nombre/Descripcion
+     *     Salidas visibles
+     *     Posible listado de items
+     *     ==================
      */
-    public String getLongDescription(){
-        String descripcion = getDescription() + "\nSalidas ---> " + getExitString();
-        String infoItems = "";
+    public void getLongDescription(){
+        System.out.println(getDescription() + "\n");
+
+        System.out.println("SALIDAS ----> " + getExitString());
+        // Si existe algun item en la sala
         if (!itemsExistentes.isEmpty()){
+            System.out.println("LISTA ITEMS:");
             for (Item itemSalaActual : itemsExistentes){
-                infoItems += "\n" + itemSalaActual.getInfoItem();
+                System.out.println(itemSalaActual.getInfoItem() + "\n");
             }
-            descripcion = getDescription() + infoItems + "\nSalidas ---> " + getExitString();
         }
-        return descripcion;
     }
 
     /**
@@ -117,7 +120,7 @@ public class Room
     public void addItem(Item nuevoItem){
         itemsExistentes.add(nuevoItem);
     }
-    
+
     /**
      * Metodo para devolver el posible item de la sala actual seleccionado por el jugador
      * 
@@ -125,28 +128,32 @@ public class Room
      */
     public Item itemToPlayer(String id){
         Item posibleItem = null;
-        int contadorItems = 0;
         boolean itemEncontrado;
         itemEncontrado = false;
-        if (!id.equals("")){
+        if (id != null){
             if (!itemsExistentes.isEmpty()){
-                while (contadorItems < itemsExistentes.size() && !itemEncontrado){
-                    Item itemActual = itemsExistentes.get(contadorItems);
+                for (int i = 0; i < itemsExistentes.size() && !itemEncontrado; i++){
+                    Item itemActual = itemsExistentes.get(i);
                     if (itemActual.getId().equals(id)){
                         posibleItem = itemActual;
                         itemEncontrado = true;
                     }
-                    contadorItems++;
                 }
+                if (!itemEncontrado){
+                    System.out.println("No has introducido un id valido");
+                }
+            }
+            else{
+                System.out.println("No hay items aqui.");
             }
         }
         else{
-            System.out.println("No has introducido ningun patron de busqueda");
+            System.out.println("Take what?..");
         }
 
         return posibleItem;
     }
-    
+
     /**
      * Elimina un item de la sala actual
      * 

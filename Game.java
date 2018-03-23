@@ -16,24 +16,24 @@
  */
 
 public class Game 
-{
+{   
     private Parser parser;
+    // Jugador
     private Player player;
-    // private Room currentRoom;
 
     /**
-     * Create the game and initialise its internal map.
+     * Constructor de Game que crea un nuevo Player e inicializa el mapeo de las Room y el Parser.
      */
     public Game() 
-    {
+    {   
         player = new Player(createRooms());
         parser = new Parser();
-        // Room startingRoom = createRooms();
-        // player.setPlayerRoom(startingRoom);
     }
 
     /**
-     * Create all the rooms and link their exits together.
+     * Crea e inicializa las salas de las que se compone el mapa del juego.
+     * 
+     * @return  Un objeto Room que representa la sala en la que aparece el jugador por primera vez (Spawn).
      */
     private Room createRooms()
     {
@@ -48,15 +48,15 @@ public class Game
         corredor3 = new Room("Corredor 3: A tu alrededor hay objetos que parecen demasiado modernos para este sitio \n que tienen grabados parecidos a los que has visto..");
         salaElectrica = new Room("Sala electrica: Parece una antigua sala desde donde gestionaban la energia.. \nVes maquinas de todo tipo que desconoces..");
         salaLLave = new Room ("Sala misteriosa: Puede que aqui encuentres algo que te ayude a salir de este lugar.. \nVes un pilar con una hendidura conocida..");
-        corredor4 = new Room("Corredor 4: Los dibujos de las paredes ahora parecen brillar...");
-        corredor5 = new Room("Corredor 5: Parece que este lugar comunica con la sala de control de agua \nporque recuerdas ese sonido con claridad..,");
+        corredor4 = new Room("Corredor 4: Los dibujos de las paredes ahora parecen brillar..");
+        corredor5 = new Room("Corredor 5: Parece que este lugar comunica con la sala de control de agua \nporque recuerdas ese sonido con claridad..");
 
         // Inicializacion de los items de cada sala
-        salaLLave.addItem(new Item("Parece que hay un cofre", 3000, "cofre", false));
-        corredor3.addItem(new Item("Hay una bateria tirada en una esquina", 1000, "bateria", true));
-        salaAgua.addItem(new Item("Hay una llave de paso que parece funcionar", 500, "llavePaso", false));
+        salaLLave.addItem(new Item("Un cofre en medio de la sala", 3000, "cofre", false));
+        corredor3.addItem(new Item("Una una bateria tirada en una esquina", 1000, "bateria", true));
+        salaAgua.addItem(new Item("Una llave de paso que parece funcionar", 500, "llavePaso", false));
         salaAgua.addItem(new Item("Hay un objeto brillante en una esquina", 500, "amuleto", true));
-        corredor5.addItem(new Item("Parece que hay una carta medio quemada sobre una mesa", 200, "carta",true));
+        corredor5.addItem(new Item("Una carta medio quemada sobre una mesa", 200, "carta",true));
         salaElectrica.addItem(new Item("Una llave sobresale de una muesca de uno de los pilares de la sala", 300, "llaveCofre", true));
         salaLLave.addItem(new Item("Otra llave con los simbolos que has visto cuelga de la pared", 300, "llaveDesconocida",true));
 
@@ -89,7 +89,7 @@ public class Game
         salaAgua.setSalidaIndividual("north", corredor5);
         corredor1.setSalidaIndividual("north-west", corredor5);
 
-        return entradaSalida;
+        return entradaSalida; // Devuelve el spawn del jugador al constructor a la vez que lo crea e iniciliza
     }
 
     /**
@@ -114,6 +114,7 @@ public class Game
 
     /**
      * Print out the opening message for the player.
+     * Ademas devuelve la informacion para el jugador en la primera sala de aparicion.
      */
     private void printWelcome()
     {
@@ -132,6 +133,7 @@ public class Game
      */
     private boolean processCommand(Command command) 
     {
+        System.out.println("=========================");
         boolean wantToQuit = false;
 
         if(command.isUnknown()) {
@@ -144,8 +146,7 @@ public class Game
             printHelp();
         }
         else if (commandWord.equals("go")) {
-            // goRoom(command);
-            player.goRoom(command);
+            player.goRoom(command.getSecondWord());
         }
         else if (commandWord.equals("look")){
             player.look();
@@ -156,6 +157,9 @@ public class Game
         else if (commandWord.equals("take")){
             player.pickUpItem(command.getSecondWord());
         }
+        else if (commandWord.equals("drop")){
+            player.dropItem(command.getSecondWord());
+        } 
         else if (commandWord.equals("quit")) {
             wantToQuit = quit(command);
         }

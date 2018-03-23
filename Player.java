@@ -27,6 +27,7 @@ public class Player
         visitedRooms = new Stack<>();
         playerItems = new ArrayList<>();
         currentRoom = startingRoom;
+        pesoActual = 0;
     }
 
     /**
@@ -59,33 +60,31 @@ public class Player
      * 
      * @param   comandoDeInterfaz La palabraque mander el parsers (la direccion)
      */
-    public void goRoom(Command comandoDeInterfaz){
-        if(!comandoDeInterfaz.hasSecondWord()) {
-            // if there is no second word, we don't know where to go...
-            System.out.println("Go where?");
-            return;
+    public void goRoom(String posibleDireccion){
+        if (posibleDireccion != null){
+            Room nextRoom = currentRoom.getExit(posibleDireccion);
+            if (nextRoom == null) {
+                System.out.println("There is no door!");
+            }
+            else {
+                // Apilamos la sala actual en el Stack de salas visitadas antes de movernos
+                // cuando la sala a la que moverse exista y asi poder ejecutar back a ella
+                visitedRooms.push(currentRoom);
+                currentRoom = nextRoom;
+                look();
+            }
         }
-        String direction = comandoDeInterfaz.getSecondWord();
-
-        Room nextRoom = currentRoom.getExit(direction);
-        if (nextRoom == null) {
-            System.out.println("There is no door!");
-        }
-        else {
-            // Apilamos la sala actual en el Stack de salas visitadas antes de movernos
-            // cuando la sala a la que moverse exista y asi poder ejecutar back a ella
-            visitedRooms.push(currentRoom);
-            currentRoom = nextRoom;
-            look();
+        else{
+            System.out.println("Go where?..");
         }
     }
 
     /**
-     * Metodo que nos permite imprimir la descripcion y salidas posibles
-     * de la sala actual en la que esta el jugador
+     * Metodo que nos permite imprimir la descripcion y salidas e items posibles
+     * de la sala actual en la que esta el jugador. 
      */
     public void look(){
-        System.out.println(currentRoom.getLongDescription());
+        currentRoom.getLongDescription();
     }
 
     /**
@@ -96,37 +95,85 @@ public class Player
         System.out.println("Acabas de comer y ya no tienes hambre");
     }
 
+    /**
+     * Metodo que permite al personaje coger objetos Item de la sala actual.
+     * 
+     * @param   id  Un String que represente la palabra clave de un Item de la sala.
+     */
     public void pickUpItem(String id){
+        // Room trata de devoler el objeto solicitado
         Item posibleItem = currentRoom.itemToPlayer(id);
 
+        // Comprobacion de errores
         if (posibleItem != null){
-            if (posibleItem.getItemWeight() + pesoActual < LIMITE_CARGA){
-                playerItems.add(posibleItem);
-                pesoActual += posibleItem.getItemWeight();
-                currentRoom.removeItem(posibleItem);
-                System.out.println("Se ha agregado el item: " + posibleItem.getInfoItem());
-                System.out.println("El peso de tu inventario actual es: " + pesoActual + "/" + LIMITE_CARGA);
-                look();
+            if(posibleItem.getCanBePickedUp()){
+                if (posibleItem.getItemWeight() + pesoActual <= LIMITE_CARGA){
+                    playerItems.add(posibleItem); // Se agrega el item seleccionado al inventario
+                    currentRoom.removeItem(posibleItem); // Se elimina del la sala actual
+                    pesoActual += posibleItem.getItemWeight(); // Nuevo peso
+                    System.out.println("Se ha agregado al inventario el item: " + posibleItem.getId()); // Info item
+                    System.out.println("El peso del inventario es: " + pesoActual + "/" + LIMITE_CARGA + "\n");
+                    look();
+                }
+                else{
+                    System.out.println("No puedes cargar con el item, superarias el limite de carga..");
+                }
             }
             else{
-                System.out.println("No puedes cargar con el item, superarias el limite de carga");
+                System.out.println("Parece que el objeto no se puede recoger..");
             }
-        }
-        else{
-            System.out.println("No existe el Item indicado");
         }
     }
 
+    /**
+     * Imprime por pantalla informacion relacionada con el estado actual del inventario.
+     */
     public void showItems(){
         if (!playerItems.isEmpty()){
-            String aDevolver = "";
             for (Item itemActual : playerItems){
-                aDevolver += "\n" + itemActual.getInfoItem();
+                System.out.println(itemActual.getInfoItem());
             }
-            System.out.println(aDevolver);
         }
         else{
             System.out.println("No tienes objetos en tu inventario");
+        }
+        System.out.println("El peso del inventario es: " + pesoActual + "/" + LIMITE_CARGA);
+    }
+
+    /**
+     * Metodo que permite al jugador soltar un objeto Item de su inventario en la sala actual.
+     * 
+     * @param   id  Un String que represente la palabra clave de un Item del inventario del jugador.
+     */
+    public void dropItem(String id){
+        if (id != null){
+            // flag stop while
+            boolean encontrado;
+            encontrado = false;
+
+            if (!playerItems.isEmpty()){
+                for (int i = 0; i < playerItems.size() && !encontrado; i++){
+                    Item itemActual = playerItems.get(i);
+                    if (itemActual.getId().equals(id)){
+                        encontrado = true; // Flag para parar el bucle
+                        playerItems.remove(itemActual); // Se elimina del inventario
+                        currentRoom.addItem(itemActual); // Se agrega a la sala actual
+                        pesoActual -= itemActual.getItemWeight(); // Nuevo peso del inventario
+                        System.out.println("Has soltado el item: " + itemActual.getId()); // Info item
+                        System.out.println("El peso de tu inventario actual es: " + pesoActual + "/" + LIMITE_CARGA); // Info inventario
+                        encontrado = true; // Flag stop
+                    }
+                }
+                if (!encontrado){
+                    System.out.println("No has introducido un id valido");
+                }
+            }
+            else{
+                System.out.println("No tienes nada en el inventario");
+            }
+        }
+        else{
+            System.out.println("Drop what?..");
         }
     }
 }

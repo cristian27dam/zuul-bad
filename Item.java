@@ -32,7 +32,7 @@ public class Item
     public String getItemDescription(){
         return itemDescription;
     }
-    
+
     /**
      * Getter para el peso del Item
      * 
@@ -41,17 +41,21 @@ public class Item
     public int getItemWeight(){
         return itemWeight;
     }
-    
+
     /**
      * Metodo para devolver la informacion del Item
      * 
      * @return  Un string con la desripcion del item
      */
     public String getInfoItem(){
-        return "id: " + id + " " + "Descripcion: " + getItemDescription() + " Peso: " + getItemWeight();
+        return "id: " + id + " " + "\nDescripcion: " + getItemDescription() + "\nPeso: " + getItemWeight();
     }
-    
+
     public String getId(){
         return id;
+    }
+
+    public boolean getCanBePickedUp(){
+        return canBePickedUp;
     }
 }
