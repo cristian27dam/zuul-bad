@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.ArrayList;
 
 /**
  * Class Room - a room in an adventure game.
@@ -11,7 +12,7 @@ import java.util.HashMap;
  * east, south, west.  For each direction, the room stores a reference
  * to the neighboring room, or null if there is no exit in that direction.
  * 
- * @author  Michael KÃ¶lling and David J. Barnes
+ * @author  Michael Kölling and David J. Barnes
  * @version 2011.07.31
  */
 public class Room 
@@ -20,8 +21,8 @@ public class Room
     private String description;
     // HashMap para las salidas posibles de la sala
     private HashMap<String, Room> salidasPosibles;
-    // Item que contiene la sala
-    private Item itemExistente;
+    // ArrayList para los items de cada Sala
+    private ArrayList<Item> itemsExistentes;
 
     /**
      * Create a room described "description". Initially, it has
@@ -30,11 +31,12 @@ public class Room
      * 
      * @param description The room's description.
      */
-    public Room(String description, Item itemExistente) 
-    {
-        this.description = description;
-        salidasPosibles = new HashMap<>();
-        this.itemExistente = itemExistente;
+    public Room(String description){
+        {
+            this.description = description;
+            salidasPosibles = new HashMap<>();
+            itemsExistentes = new ArrayList<>();
+        }
     }
 
     /**
@@ -42,7 +44,7 @@ public class Room
      * y asi poder "inventar" direcciones desde la clase Game.
      * 
      * @param   direccion   La direccion de la salida de la sala.
-     * @param   Room        La sala de destino.
+     * @param   nuevaSalida La sala de destino.
      */
     public void setSalidaIndividual(String direccion, Room nuevaSalida) 
     {   
@@ -62,7 +64,7 @@ public class Room
     /**
      * Metodo que devuelve la sala asociada a la direccion indicada por el jugador
      * 
-     * @param   Un String que indica la direccion indicada por el jugador.
+     * @param   direccion   Un String que indica la direccion indicada por el jugador.
      * @return  Un objeto Room que representa una sala existente en dicha direccion o null en caso contrario.
      */
     public Room getExit(String direccion){
@@ -96,6 +98,61 @@ public class Room
      * @return A description of the room, including exits.
      */
     public String getLongDescription(){
-        return getDescription() + "\nSalidas ---> " + getExitString();
+        String descripcion = getDescription() + "\nSalidas ---> " + getExitString();
+        String infoItems = "";
+        if (!itemsExistentes.isEmpty()){
+            for (Item itemSalaActual : itemsExistentes){
+                infoItems += "\n" + itemSalaActual.getInfoItem();
+            }
+            descripcion = getDescription() + infoItems + "\nSalidas ---> " + getExitString();
+        }
+        return descripcion;
+    }
+
+    /**
+     * Metodo que nos permite agregar tantos items como queramos a la sala actual
+     * 
+     * @param   nuevoItem   Un objeto Item que estara incluido en la sala.
+     */
+    public void addItem(Item nuevoItem){
+        itemsExistentes.add(nuevoItem);
+    }
+    
+    /**
+     * Metodo para devolver el posible item de la sala actual seleccionado por el jugador
+     * 
+     * @param   id  El id que identifica al objeto Item
+     */
+    public Item itemToPlayer(String id){
+        Item posibleItem = null;
+        int contadorItems = 0;
+        boolean itemEncontrado;
+        itemEncontrado = false;
+        if (!id.equals("")){
+            if (!itemsExistentes.isEmpty()){
+                while (contadorItems < itemsExistentes.size() && !itemEncontrado){
+                    Item itemActual = itemsExistentes.get(contadorItems);
+                    if (itemActual.getId().equals(id)){
+                        posibleItem = itemActual;
+                        itemEncontrado = true;
+                    }
+                    contadorItems++;
+                }
+            }
+        }
+        else{
+            System.out.println("No has introducido ningun patron de busqueda");
+        }
+
+        return posibleItem;
+    }
+    
+    /**
+     * Elimina un item de la sala actual
+     * 
+     * @param   itemToRemove    El objeto tipo Item a eliminar de la sala.
+     */
+    public void removeItem(Item itemToRemove){
+        itemsExistentes.remove(itemToRemove);
     }
 }
