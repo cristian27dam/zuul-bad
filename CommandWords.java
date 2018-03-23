@@ -13,7 +13,7 @@ public class CommandWords
 {
     // a constant array that holds all valid command words
     private static final String[] validCommands = {
-            "go", "quit", "help", "look", "eat"
+            "go", "quit", "help", "look", "eat", "back"
         };
 
     /**
@@ -42,8 +42,6 @@ public class CommandWords
     /**
      * Devuelve un String con todos los comandos validos
      * disponibles actualmente en el juego.
-     * 
-     * @return String con los comandos validos disponibles
      */
     public String getCommandList()
     {   
