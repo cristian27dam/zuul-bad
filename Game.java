@@ -1,5 +1,3 @@
-import java.util.Stack;
-
 /**
  *  This class is the main class of the "World of Zuul" application. 
  *  "World of Zuul" is a very simple, text based adventure game.  Users 
@@ -20,48 +18,45 @@ import java.util.Stack;
 public class Game 
 {
     private Parser parser;
-    private Room currentRoom;
-    private Stack<Room> visitedRooms;
+    private Player player;
+    // private Room currentRoom;
 
     /**
      * Create the game and initialise its internal map.
      */
     public Game() 
     {
-        createRooms();
+        player = new Player(createRooms());
         parser = new Parser();
-        visitedRooms = new Stack();
+        // Room startingRoom = createRooms();
+        // player.setPlayerRoom(startingRoom);
     }
 
     /**
      * Create all the rooms and link their exits together.
      */
-    private void createRooms()
+    private Room createRooms()
     {
         Room entradaSalida, corredor1, salaAgua, salaFuego, corredor2, corredor3, salaElectrica, salaLLave, corredor4, corredor5;
 
         // Inicializacion de las salas de la mazmorra con su descripcion
-        entradaSalida = new Room("Entrada/Salida: Estas confundido y mareado.. Ves una puerta cerrada detras de ti.. \nNotas algo de humedad en el ambiente..");
-        corredor1 = new Room("Corredor 1: Un pasadizo donde se escucha ruido cerca..");
-        salaAgua = new Room("Sala de Agua: Te encuentras en una sala llena de canyerias desde donde parece \nque se puede controlar el sistema hidraulico de este lugar..");
-        salaFuego = new Room("Sala de Fuego: En esta sala ves llamas por todas partes y resulta sofocante estar mucho tiempo aqui..");
-        corredor2 = new Room("Corredor 2: Un pasadizo con extranyos simbolos dibujados en la pared..\nEn el techo puedes ver una trampilla con un gran simbolo iluminado");
-        corredor3 = new Room("Corredor 3: A tu alrededor hay objetos que parecen demasiado modernos para este sitio \n que tienen grabados parecidos a los que has visto..");
-        salaElectrica = new Room("Sala electrica: Parece una antigua sala desde donde gestionaban la energia.. \nVes maquinas de todo tipo que desconoces..");
-        salaLLave = new Room ("Sala misteriosa: Puede que aqui encuentres algo que te ayude a salir de este lugar.. \nVes un pilar con una hendidura conocida..");
-        corredor4 = new Room("Corredor 4: Los dibujos de las paredes ahora parecen brillar...");
-        corredor5 = new Room("Corredor 5: Parece que este lugar comunica con la sala de control de agua \nporque recuerdas ese sonido con claridad..,");
+        entradaSalida = new Room("Entrada/Salida: Estas confundido y mareado.. Ves una puerta cerrada detras de ti.. \nNotas algo de humedad en el ambiente..", null);
+        corredor1 = new Room("Corredor 1: Un pasadizo donde se escucha ruido cerca..", null);
+        salaAgua = new Room("Sala de Agua: Te encuentras en una sala llena de canyerias desde donde parece \n que se puede controlar el sistema hidraulico de este lugar..",
+            new Item("Hay una llave de paso que parece funcionar", 500));
+        salaFuego = new Room("Sala de Fuego: En esta sala ves llamas por todas partes y resulta sofocante estar mucho tiempo aqui..", null);
+        corredor2 = new Room("Corredor 2: Un pasadizo con extranyos simbolos dibujados en la pared..\nEn el techo puedes ver una trampilla con un gran simbolo iluminado", null);
+        corredor3 = new Room("Corredor 3: A tu alrededor hay objetos que parecen demasiado modernos para este sitio \n que tienen grabados parecidos a los que has visto..", 
+            new Item("Hay una bateria tirada en una esquina", 1000));
+        salaElectrica = new Room("Sala electrica: Parece una antigua sala desde donde gestionaban la energia.. \nVes maquinas de todo tipo que desconoces..", null);
+        salaLLave = new Room ("Sala misteriosa: Puede que aqui encuentres algo que te ayude a salir de este lugar.. \nVes un pilar con una hendidura conocida..", 
+            new Item("Parece que hay un cofre", 3000));
+        corredor4 = new Room("Corredor 4: Los dibujos de las paredes ahora parecen brillar...", null);
+        corredor5 = new Room("Corredor 5: Parece que este lugar comunica con la sala de control de agua \nporque recuerdas ese sonido con claridad..,", null);
 
-        // Inicializacion de los items de cada sala
-        salaLLave.addItem(new Item("Parece que hay un cofre", 3000));
-        corredor3.addItem(new Item("Hay una bateria tirada en una esquina", 1000));
-        salaAgua.addItem(new Item("Hay una llave de paso que parece funcionar", 500));
-        salaAgua.addItem(new Item("Hay un objeto brillante en una esquina", 500));
-
-        // Mapeo de cada salida de cada sala al momento de creacion
+        // Mapeo de cada sala con sus posibles salidas al momento de creacion
         entradaSalida.setSalidaIndividual("north", corredor1);
         entradaSalida.setSalidaIndividual("north-west", salaAgua);
-        corredor1.setSalidaIndividual("south", entradaSalida);
         corredor1.setSalidaIndividual("west", salaAgua);
         corredor1.setSalidaIndividual("east", salaFuego);
         salaAgua.setSalidaIndividual("east", corredor1);
@@ -87,8 +82,10 @@ public class Game
         salaAgua.setSalidaIndividual("north", corredor5);
         corredor1.setSalidaIndividual("north-west", corredor5);
 
-        // Sala donde empieza el jugador
-        currentRoom = entradaSalida;
+        // // Sala donde empieza el jugador
+        // player.setPlayerRoom(entradaSalida);
+        
+        return entradaSalida;
     }
 
     /**
@@ -121,7 +118,7 @@ public class Game
         System.out.println("World of Signs es un simple juego adaptado para nuestra clase de Java! ^^");
         System.out.println("Escribe 'help' para mas informacion.");
         System.out.println();
-        printLocationInfo(); // Imprime localizacion y posibles salidas
+        player.look(); // Imprime localizacion y posibles salidas
     }
 
     /**
@@ -143,29 +140,22 @@ public class Game
             printHelp();
         }
         else if (commandWord.equals("go")) {
-            goRoom(command);
+            // goRoom(command);
+            player.goRoom(command);
         }
         else if (commandWord.equals("look")){
-            look();
+            player.look();
         }
         else if (commandWord.equals("eat")){
-            eat();
+            player.eat();
         }
         else if (commandWord.equals("quit")) {
             wantToQuit = quit(command);
         }
-        else{
-            if ((commandWord.equals("back") && !visitedRooms.empty())){
-                // Almacenamos la ultima sala apilada en el Stack de habitaciones
-                // visitadas y la borramos del historial
-                currentRoom = visitedRooms.pop();
-            }
-            else{
-                System.out.println("¡No puedes volver atras, tienes que moverte primero!");
-            }
-            printLocationInfo();
+        else if (commandWord.equals("back")){
+            player.backToRoom();
         }
-
+        
         return wantToQuit;
     }
 
@@ -186,37 +176,6 @@ public class Game
     }
 
     /** 
-     * Try to go in one direction. If there is an exit, enter
-     * the new room, otherwise print an error message.
-     */
-    private void goRoom(Command command) 
-    {
-        if(!command.hasSecondWord()) {
-            // if there is no second word, we don't know where to go...
-            System.out.println("Go where?");
-            return;
-        }
-
-        // La direccion que solicita el usuario
-        String direction = command.getSecondWord();
-
-        // Try to leave current room.
-        Room nextRoom = currentRoom.getExit(direction);
-
-        if (nextRoom == null) {
-            System.out.println("There is no door!");
-        }
-        else {
-            // Apilamos la sala actual en el Stack de salas visitadas antes de movernos
-            // cuando la sala a la que moverse exista y asi poder ejecutar back a ella
-            visitedRooms.push(currentRoom);
-            currentRoom = nextRoom;
-            printLocationInfo(); // Imprime localizacion y posibles salidas
-            
-        }
-    }
-
-    /** 
      * "Quit" was entered. Check the rest of the command to see
      * whether we really quit the game.
      * @return true, if this command quits the game, false otherwise.
@@ -230,29 +189,5 @@ public class Game
         else {
             return true;  // signal that we want to quit
         }
-    }
-
-    /**
-     * Metodo privado que nos informa en que sala nos encontramos
-     * e imprime las posibles salidas desde ese punto actual.
-     */
-    private void printLocationInfo(){
-        System.out.println(currentRoom.getLongDescription());
-    }
-
-    /**
-     * Metodo privado que nos permite imprimir la descripcion y salidas posibles
-     * de la sala actual en la que esta el jugador
-     */
-    private void look(){
-        System.out.println(currentRoom.getLongDescription());
-    }
-
-    /**
-     * Metodo privado que nos permite simular que el personaje ha comido
-     * y se ha aumentando un valor ficticio de "cantidad de hambre".
-     */
-    private void eat(){
-        System.out.println("Acabas de comer y ya no tienes hambre");
     }
 }

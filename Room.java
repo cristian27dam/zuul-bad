@@ -1,5 +1,4 @@
 import java.util.HashMap;
-import java.util.ArrayList;
 
 /**
  * Class Room - a room in an adventure game.
@@ -21,8 +20,8 @@ public class Room
     private String description;
     // HashMap para las salidas posibles de la sala
     private HashMap<String, Room> salidasPosibles;
-    // ArrayList para los items de cada Sala
-    private ArrayList<Item> itemsExistentes;
+    // Item que contiene la sala
+    private Item itemExistente;
 
     /**
      * Create a room described "description". Initially, it has
@@ -31,12 +30,11 @@ public class Room
      * 
      * @param description The room's description.
      */
-    public Room(String description){
-        {
-            this.description = description;
-            salidasPosibles = new HashMap<>();
-            itemsExistentes = new ArrayList<>();
-        }
+    public Room(String description, Item itemExistente) 
+    {
+        this.description = description;
+        salidasPosibles = new HashMap<>();
+        this.itemExistente = itemExistente;
     }
 
     /**
@@ -44,7 +42,7 @@ public class Room
      * y asi poder "inventar" direcciones desde la clase Game.
      * 
      * @param   direccion   La direccion de la salida de la sala.
-     * @param   nuevaSalida La sala de destino.
+     * @param   Room        La sala de destino.
      */
     public void setSalidaIndividual(String direccion, Room nuevaSalida) 
     {   
@@ -64,7 +62,7 @@ public class Room
     /**
      * Metodo que devuelve la sala asociada a la direccion indicada por el jugador
      * 
-     * @param   direccion   Un String que indica la direccion indicada por el jugador.
+     * @param   Un String que indica la direccion indicada por el jugador.
      * @return  Un objeto Room que representa una sala existente en dicha direccion o null en caso contrario.
      */
     public Room getExit(String direccion){
@@ -98,23 +96,6 @@ public class Room
      * @return A description of the room, including exits.
      */
     public String getLongDescription(){
-        String descripcion = getDescription() + "\nSalidas ---> " + getExitString();
-        String infoItems = "";
-        if (!itemsExistentes.isEmpty()){
-            for (Item itemSalaActual : itemsExistentes){
-                infoItems += "\nItem: " + itemSalaActual.getInfoItem();
-            }
-            descripcion = getDescription() + infoItems + "\nSalidas ---> " + getExitString();
-        }
-        return descripcion;
-    }
-    
-    /**
-     * Metodo que nos permite agregar tantos items como queramos a la sala actual
-     * 
-     * @param   nuevoItem   Un objeto Item que estara incluido en la sala.
-     */
-    public void addItem(Item nuevoItem){
-        itemsExistentes.add(nuevoItem);
+        return getDescription() + "\nSalidas ---> " + getExitString();
     }
 }
