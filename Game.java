@@ -16,47 +16,54 @@
  */
 
 public class Game 
-{
+{   
     private Parser parser;
+    // Jugador
     private Player player;
-    // private Room currentRoom;
 
     /**
-     * Create the game and initialise its internal map.
+     * Constructor de Game que crea un nuevo Player e inicializa el mapeo de las Room y el Parser.
      */
     public Game() 
-    {
+    {   
         player = new Player(createRooms());
         parser = new Parser();
-        // Room startingRoom = createRooms();
-        // player.setPlayerRoom(startingRoom);
     }
 
     /**
-     * Create all the rooms and link their exits together.
+     * Crea e inicializa las salas de las que se compone el mapa del juego.
+     * 
+     * @return  Un objeto Room que representa la sala en la que aparece el jugador por primera vez (Spawn).
      */
     private Room createRooms()
     {
         Room entradaSalida, corredor1, salaAgua, salaFuego, corredor2, corredor3, salaElectrica, salaLLave, corredor4, corredor5;
 
         // Inicializacion de las salas de la mazmorra con su descripcion
-        entradaSalida = new Room("Entrada/Salida: Estas confundido y mareado.. Ves una puerta cerrada detras de ti.. \nNotas algo de humedad en el ambiente..", null);
-        corredor1 = new Room("Corredor 1: Un pasadizo donde se escucha ruido cerca..", null);
-        salaAgua = new Room("Sala de Agua: Te encuentras en una sala llena de canyerias desde donde parece \n que se puede controlar el sistema hidraulico de este lugar..",
-            new Item("Hay una llave de paso que parece funcionar", 500));
-        salaFuego = new Room("Sala de Fuego: En esta sala ves llamas por todas partes y resulta sofocante estar mucho tiempo aqui..", null);
-        corredor2 = new Room("Corredor 2: Un pasadizo con extranyos simbolos dibujados en la pared..\nEn el techo puedes ver una trampilla con un gran simbolo iluminado", null);
-        corredor3 = new Room("Corredor 3: A tu alrededor hay objetos que parecen demasiado modernos para este sitio \n que tienen grabados parecidos a los que has visto..", 
-            new Item("Hay una bateria tirada en una esquina", 1000));
-        salaElectrica = new Room("Sala electrica: Parece una antigua sala desde donde gestionaban la energia.. \nVes maquinas de todo tipo que desconoces..", null);
-        salaLLave = new Room ("Sala misteriosa: Puede que aqui encuentres algo que te ayude a salir de este lugar.. \nVes un pilar con una hendidura conocida..", 
-            new Item("Parece que hay un cofre", 3000));
-        corredor4 = new Room("Corredor 4: Los dibujos de las paredes ahora parecen brillar...", null);
-        corredor5 = new Room("Corredor 5: Parece que este lugar comunica con la sala de control de agua \nporque recuerdas ese sonido con claridad..,", null);
+        entradaSalida = new Room("Entrada/Salida: Estas confundido y mareado.. Ves una puerta cerrada detras de ti.. \nNotas algo de humedad en el ambiente..");
+        corredor1 = new Room("Corredor 1: Un pasadizo donde se escucha ruido cerca..");
+        salaAgua = new Room("Sala de Agua: Te encuentras en una sala llena de canyerias desde donde parece \nque se puede controlar el sistema hidraulico de este lugar..");
+        salaFuego = new Room("Sala de Fuego: En esta sala ves llamas por todas partes y resulta sofocante estar mucho tiempo aqui..");
+        corredor2 = new Room("Corredor 2: Un pasadizo con extranyos simbolos dibujados en la pared..\nEn el techo puedes ver una trampilla con un gran simbolo iluminado");
+        corredor3 = new Room("Corredor 3: A tu alrededor hay objetos que parecen demasiado modernos para este sitio \n que tienen grabados parecidos a los que has visto..");
+        salaElectrica = new Room("Sala electrica: Parece una antigua sala desde donde gestionaban la energia.. \nVes maquinas de todo tipo que desconoces..");
+        salaLLave = new Room ("Sala misteriosa: Puede que aqui encuentres algo que te ayude a salir de este lugar.. \nVes un pilar con una hendidura conocida..");
+        corredor4 = new Room("Corredor 4: Los dibujos de las paredes ahora parecen brillar..");
+        corredor5 = new Room("Corredor 5: Parece que este lugar comunica con la sala de control de agua \nporque recuerdas ese sonido con claridad..");
 
-        // Mapeo de cada sala con sus posibles salidas al momento de creacion
+        // Inicializacion de los items de cada sala
+        salaLLave.addItem(new Item("Un cofre en medio de la sala", 3000, "cofre", false));
+        corredor3.addItem(new Item("Una una bateria tirada en una esquina", 1000, "bateria", true));
+        salaAgua.addItem(new Item("Una llave de paso que parece funcionar", 500, "llavePaso", false));
+        salaAgua.addItem(new Item("Hay un objeto brillante en una esquina", 500, "amuleto", true));
+        corredor5.addItem(new Item("Una carta medio quemada sobre una mesa", 200, "carta",true));
+        salaElectrica.addItem(new Item("Una llave sobresale de una muesca de uno de los pilares de la sala", 300, "llaveCofre", true));
+        salaLLave.addItem(new Item("Otra llave con los simbolos que has visto cuelga de la pared", 300, "llaveDesconocida",true));
+
+        // Mapeo de cada salida de cada sala al momento de creacion
         entradaSalida.setSalidaIndividual("north", corredor1);
         entradaSalida.setSalidaIndividual("north-west", salaAgua);
+        corredor1.setSalidaIndividual("south", entradaSalida);
         corredor1.setSalidaIndividual("west", salaAgua);
         corredor1.setSalidaIndividual("east", salaFuego);
         salaAgua.setSalidaIndividual("east", corredor1);
@@ -82,10 +89,7 @@ public class Game
         salaAgua.setSalidaIndividual("north", corredor5);
         corredor1.setSalidaIndividual("north-west", corredor5);
 
-        // // Sala donde empieza el jugador
-        // player.setPlayerRoom(entradaSalida);
-        
-        return entradaSalida;
+        return entradaSalida; // Devuelve el spawn del jugador al constructor a la vez que lo crea e iniciliza
     }
 
     /**
@@ -110,6 +114,7 @@ public class Game
 
     /**
      * Print out the opening message for the player.
+     * Ademas devuelve la informacion para el jugador en la primera sala de aparicion.
      */
     private void printWelcome()
     {
@@ -128,6 +133,7 @@ public class Game
      */
     private boolean processCommand(Command command) 
     {
+        System.out.println("=========================");
         boolean wantToQuit = false;
 
         if(command.isUnknown()) {
@@ -140,8 +146,7 @@ public class Game
             printHelp();
         }
         else if (commandWord.equals("go")) {
-            // goRoom(command);
-            player.goRoom(command);
+            player.goRoom(command.getSecondWord());
         }
         else if (commandWord.equals("look")){
             player.look();
@@ -149,13 +154,22 @@ public class Game
         else if (commandWord.equals("eat")){
             player.eat();
         }
+        else if (commandWord.equals("take")){
+            player.pickUpItem(command.getSecondWord());
+        }
+        else if (commandWord.equals("drop")){
+            player.dropItem(command.getSecondWord());
+        } 
         else if (commandWord.equals("quit")) {
             wantToQuit = quit(command);
+        }
+        else if (commandWord.equals("items")){
+            player.showItems();
         }
         else if (commandWord.equals("back")){
             player.backToRoom();
         }
-        
+
         return wantToQuit;
     }
 

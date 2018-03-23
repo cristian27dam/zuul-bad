@@ -6,18 +6,22 @@
  * @version v1
  */
 public class Item
-{
+{   
+    private String id;
     private String itemDescription;
     private int itemWeight;
+    private boolean canBePickedUp;
     /**
      * Contructor de objetos Item
      * 
      * @param   itemDescription
      */
-    public Item(String itemDescription, int itemWeight)
+    public Item(String itemDescription, int itemWeight, String id, boolean canBePickedUp)
     {
         this.itemDescription = itemDescription;
         this.itemWeight = itemWeight;
+        this.id = id;
+        this.canBePickedUp = canBePickedUp;
     }
 
     /**
@@ -28,7 +32,7 @@ public class Item
     public String getItemDescription(){
         return itemDescription;
     }
-    
+
     /**
      * Getter para el peso del Item
      * 
@@ -37,13 +41,21 @@ public class Item
     public int getItemWeight(){
         return itemWeight;
     }
-    
+
     /**
      * Metodo para devolver la informacion del Item
      * 
      * @return  Un string con la desripcion del item
      */
     public String getInfoItem(){
-        return getItemDescription() + " Peso: " + getItemWeight();
+        return "id: " + id + " " + "\nDescripcion: " + getItemDescription() + "\nPeso: " + getItemWeight();
+    }
+
+    public String getId(){
+        return id;
+    }
+
+    public boolean getCanBePickedUp(){
+        return canBePickedUp;
     }
 }

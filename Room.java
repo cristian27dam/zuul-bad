@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.ArrayList;
 
 /**
  * Class Room - a room in an adventure game.
@@ -11,7 +12,7 @@ import java.util.HashMap;
  * east, south, west.  For each direction, the room stores a reference
  * to the neighboring room, or null if there is no exit in that direction.
  * 
- * @author  Michael KÃ¶lling and David J. Barnes
+ * @author  Michael Kölling and David J. Barnes
  * @version 2011.07.31
  */
 public class Room 
@@ -20,8 +21,8 @@ public class Room
     private String description;
     // HashMap para las salidas posibles de la sala
     private HashMap<String, Room> salidasPosibles;
-    // Item que contiene la sala
-    private Item itemExistente;
+    // ArrayList para los items de cada Sala
+    private ArrayList<Item> itemsExistentes;
 
     /**
      * Create a room described "description". Initially, it has
@@ -30,11 +31,12 @@ public class Room
      * 
      * @param description The room's description.
      */
-    public Room(String description, Item itemExistente) 
-    {
-        this.description = description;
-        salidasPosibles = new HashMap<>();
-        this.itemExistente = itemExistente;
+    public Room(String description){
+        {
+            this.description = description;
+            salidasPosibles = new HashMap<>();
+            itemsExistentes = new ArrayList<>();
+        }
     }
 
     /**
@@ -42,7 +44,7 @@ public class Room
      * y asi poder "inventar" direcciones desde la clase Game.
      * 
      * @param   direccion   La direccion de la salida de la sala.
-     * @param   Room        La sala de destino.
+     * @param   nuevaSalida La sala de destino.
      */
     public void setSalidaIndividual(String direccion, Room nuevaSalida) 
     {   
@@ -62,7 +64,7 @@ public class Room
     /**
      * Metodo que devuelve la sala asociada a la direccion indicada por el jugador
      * 
-     * @param   Un String que indica la direccion indicada por el jugador.
+     * @param   direccion   Un String que indica la direccion indicada por el jugador.
      * @return  Un objeto Room que representa una sala existente en dicha direccion o null en caso contrario.
      */
     public Room getExit(String direccion){
@@ -82,7 +84,7 @@ public class Room
         // Se concatenan las salidas posibles de la sala actual
         for(String salidaPosible : salidasPosibles.keySet()){
             if (salidasPosibles.get(salidaPosible) != null){
-                salidasADevolver += salidaPosible + " ";
+                salidasADevolver += "[" + salidaPosible + "]" + " ";
             }
         }
 
@@ -90,12 +92,74 @@ public class Room
     }
 
     /**
-     * Return a long description of this room, of the form:
-     *     You are in the 'name of room'
-     *     Exits: north west southwest
-     * @return A description of the room, including exits.
+     * Imprime por pantalla la informacion relacionada con la sala actual.
+     *     ==================
+     *     Nombre/Descripcion
+     *     Salidas visibles
+     *     Posible listado de items
+     *     ==================
      */
-    public String getLongDescription(){
-        return getDescription() + "\nSalidas ---> " + getExitString();
+    public void getLongDescription(){
+        System.out.println(getDescription() + "\n");
+
+        System.out.println("SALIDAS ----> " + getExitString());
+        // Si existe algun item en la sala
+        if (!itemsExistentes.isEmpty()){
+            System.out.println("LISTA ITEMS:");
+            for (Item itemSalaActual : itemsExistentes){
+                System.out.println(itemSalaActual.getInfoItem() + "\n");
+            }
+        }
+    }
+
+    /**
+     * Metodo que nos permite agregar tantos items como queramos a la sala actual
+     * 
+     * @param   nuevoItem   Un objeto Item que estara incluido en la sala.
+     */
+    public void addItem(Item nuevoItem){
+        itemsExistentes.add(nuevoItem);
+    }
+
+    /**
+     * Metodo para devolver el posible item de la sala actual seleccionado por el jugador
+     * 
+     * @param   id  El id que identifica al objeto Item
+     */
+    public Item itemToPlayer(String id){
+        Item posibleItem = null;
+        boolean itemEncontrado;
+        itemEncontrado = false;
+        if (id != null){
+            if (!itemsExistentes.isEmpty()){
+                for (int i = 0; i < itemsExistentes.size() && !itemEncontrado; i++){
+                    Item itemActual = itemsExistentes.get(i);
+                    if (itemActual.getId().equals(id)){
+                        posibleItem = itemActual;
+                        itemEncontrado = true;
+                    }
+                }
+                if (!itemEncontrado){
+                    System.out.println("No has introducido un id valido");
+                }
+            }
+            else{
+                System.out.println("No hay items aqui.");
+            }
+        }
+        else{
+            System.out.println("Take what?..");
+        }
+
+        return posibleItem;
+    }
+
+    /**
+     * Elimina un item de la sala actual
+     * 
+     * @param   itemToRemove    El objeto tipo Item a eliminar de la sala.
+     */
+    public void removeItem(Item itemToRemove){
+        itemsExistentes.remove(itemToRemove);
     }
 }
