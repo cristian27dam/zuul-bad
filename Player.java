@@ -17,7 +17,9 @@ public class Player
     // Peso actual del inventario
     private int pesoActual;
     // Constante que define el limite de peso
-    private final int LIMITE_CARGA = 1300;
+    private int limiteCarga = 1300;
+    // Flag para la funcionalidad especial (reducir peso)
+    private boolean sobrecarga;
 
     /**
      * Constructor para las instancias de jugadores
@@ -28,6 +30,7 @@ public class Player
         playerItems = new ArrayList<>();
         currentRoom = startingRoom;
         pesoActual = 0;
+        sobrecarga = false;
     }
 
     /**
@@ -107,12 +110,17 @@ public class Player
         // Comprobacion de errores
         if (posibleItem != null){
             if(posibleItem.getCanBePickedUp()){
-                if (posibleItem.getItemWeight() + pesoActual <= LIMITE_CARGA){
+                if (posibleItem.getItemWeight() + pesoActual <= limiteCarga){
                     playerItems.add(posibleItem); // Se agrega el item seleccionado al inventario
                     currentRoom.removeItem(posibleItem); // Se elimina del la sala actual
-                    pesoActual += posibleItem.getItemWeight(); // Nuevo peso
+                    if (sobrecarga){
+                        pesoActual += posibleItem.getItemWeight() / 2; // Nuevo peso con item especial
+                    }
+                    else{
+                        pesoActual += posibleItem.getItemWeight(); // Nuevo peso sin item especial
+                    }
                     System.out.println("Se ha agregado al inventario el item: " + posibleItem.getId()); // Info item
-                    System.out.println("El peso del inventario es: " + pesoActual + "/" + LIMITE_CARGA + "\n");
+                    System.out.println("El peso del inventario es: " + pesoActual + "/" + limiteCarga + "\n");
                     look();
                 }
                 else{
@@ -129,7 +137,12 @@ public class Player
      * Imprime por pantalla informacion relacionada con el estado actual del inventario.
      */
     public void showItems(){
+        String infoAuxiliar = "¡SOBRECARGA SIN ACTIVAR!";
+        if (sobrecarga){
+            infoAuxiliar = "¡SOBRECARGA ACTIVIADA, REDUCCION DE PESO ITEMS DEL INVENTARIO Y SIGUIENTES!...";
+        }
         if (!playerItems.isEmpty()){
+            System.out.println(infoAuxiliar); // Mostrar si la sobrecarga ha sido activada
             for (Item itemActual : playerItems){
                 System.out.println(itemActual.getInfoItem());
             }
@@ -137,7 +150,7 @@ public class Player
         else{
             System.out.println("No tienes objetos en tu inventario");
         }
-        System.out.println("El peso del inventario es: " + pesoActual + "/" + LIMITE_CARGA);
+        System.out.println("El peso del inventario es: " + pesoActual + "/" + limiteCarga);
     }
 
     /**
@@ -158,9 +171,14 @@ public class Player
                         encontrado = true; // Flag para parar el bucle
                         playerItems.remove(itemActual); // Se elimina del inventario
                         currentRoom.addItem(itemActual); // Se agrega a la sala actual
-                        pesoActual -= itemActual.getItemWeight(); // Nuevo peso del inventario
+                        if (sobrecarga){
+                            pesoActual -= itemActual.getItemWeight() / 2; // Nuevo peso con item especial
+                        }
+                        else{
+                            pesoActual -= itemActual.getItemWeight(); // Nuevo peso sin item especial
+                        }
                         System.out.println("Has soltado el item: " + itemActual.getId()); // Info item
-                        System.out.println("El peso de tu inventario actual es: " + pesoActual + "/" + LIMITE_CARGA); // Info inventario
+                        System.out.println("El peso de tu inventario actual es: " + pesoActual + "/" + limiteCarga); // Info inventario
                         encontrado = true; // Flag stop
                     }
                 }
@@ -175,5 +193,46 @@ public class Player
         else{
             System.out.println("Drop what?..");
         }
+    }
+
+    /**
+     * Metodo que comprueba si se dan las condiciones para llamar y ejecutar la sobrecarga del inventario
+     * implementando la funcionalidad solicitada.
+     * 
+     * @param   item    Un string que determina sobre que item se ha utilizado el comando recharge
+     */
+    public void changePlayerInventory(String posibleItem){
+
+        // Que el item sobre el que se invoca recharge sea la bateria,
+        // que se encuentre en la sala correcta y que en el inventario existan items actualmente
+        if (posibleItem.equals("bateria") && getCurrentRoom().getDescription().contains("Sala electrica") && playerItems.size() > 0) {
+            int indiceItems = 0;
+            boolean encontrado = false;
+            // Comprobamos si en el inventario esta el item con id "bateria"
+            while (indiceItems < playerItems.size() && !encontrado){
+                if (playerItems.get(indiceItems).getId().equals(posibleItem)){
+                    //Mensaje que informa de la sobrecarga al usuario
+                    System.out.println("Te sientes mas ligero, el peso de los items del inventario se reduce a la mitad \ny a partir de este momento el peso de cualquier item recogido sera de la mitad \n");
+
+                    int pesoAcumulado = 0;
+
+                    for (Item item : playerItems){
+                        pesoAcumulado += item.getItemWeight();
+                    }
+
+                    // Se quita de la carga actual la mitad del peso de los items del inventario actuales
+                    pesoActual -= pesoAcumulado / 2;
+                    sobrecarga = true; // flag de la reduccion para los siguientes items
+                    encontrado = true; // termina el while
+                }
+                indiceItems++;
+            }
+        }
+        else{
+            System.out.println("No se puede usar el comando en este momento");
+        }
+
+        //Se vuelve a mostrar la informacion de la sala
+        look();
     }
 }

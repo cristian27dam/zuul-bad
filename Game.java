@@ -166,6 +166,9 @@ public class Game
         else if (commandWord.equals("items")){
             player.showItems();
         }
+        else if (commandWord.equals("recharge")){
+            player.changePlayerInventory(command.getSecondWord());
+        }
         else if (commandWord.equals("back")){
             player.backToRoom();
         }
