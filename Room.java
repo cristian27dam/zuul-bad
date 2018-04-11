@@ -162,4 +162,8 @@ public class Room
     public void removeItem(Item itemToRemove){
         itemsExistentes.remove(itemToRemove);
     }
+    
+    public static void reducirPesoItems(){
+        // testing
+    }
 }
