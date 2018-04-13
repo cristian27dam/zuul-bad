@@ -136,43 +136,44 @@ public class Game
         System.out.println("=========================");
         boolean wantToQuit = false;
 
-        if(command.isUnknown()) {
-            System.out.println("I don't know what you mean...");
-            return false;
-        }
+        // String commandWord = command.getCommandWord();
+        CommandWord commandWord = command.getCommandWord();
 
-        String commandWord = command.getCommandWord();
-        if (commandWord.equals("help")) {
-            printHelp();
+        switch (commandWord){
+            case UNKNOWN:
+                System.out.println("I don't know what you mean...");
+                break;
+            case HELP:
+                printHelp();
+                break;
+            case GO:
+                player.goRoom(command.getSecondWord());
+                break;
+            case LOOK:
+                player.look();
+                break;
+            case EAT:
+                player.eat();
+                break;
+            case TAKE:
+                player.pickUpItem(command.getSecondWord());
+                break;
+            case DROP:
+                player.dropItem(command.getSecondWord());
+                break;
+            case ITEMS:
+                player.showItems();
+                break;
+            case QUIT:
+                wantToQuit = quit(command);
+                break;
+            case BACK:
+                player.backToRoom();
+                break;
+            case RECHARGE:
+                player.changePlayerInventory(command.getSecondWord());
+                break;
         }
-        else if (commandWord.equals("go")) {
-            player.goRoom(command.getSecondWord());
-        }
-        else if (commandWord.equals("look")){
-            player.look();
-        }
-        else if (commandWord.equals("eat")){
-            player.eat();
-        }
-        else if (commandWord.equals("take")){
-            player.pickUpItem(command.getSecondWord());
-        }
-        else if (commandWord.equals("drop")){
-            player.dropItem(command.getSecondWord());
-        } 
-        else if (commandWord.equals("quit")) {
-            wantToQuit = quit(command);
-        }
-        else if (commandWord.equals("items")){
-            player.showItems();
-        }
-        else if (commandWord.equals("recharge")){
-            player.changePlayerInventory(command.getSecondWord());
-        }
-        else if (commandWord.equals("back")){
-            player.backToRoom();
-        }
-
         return wantToQuit;
     }
 

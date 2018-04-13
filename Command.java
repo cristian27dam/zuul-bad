@@ -19,28 +19,27 @@
 
 public class Command
 {
-    private String commandWord;
+    private CommandWord commandWord;
     private String secondWord;
 
     /**
      * Create a command object. First and second word must be supplied, but
-     * either one (or both) can be null.
-     * @param firstWord The first word of the command. Null if the command
-     *                  was not recognised.
-     * @param secondWord The second word of the command.
+     * the second may be null.
+     * @param commandWord The CommandWord. UNKNOWN if the command word was not
+     * recognised.
+     * @param secondWord The second word of the command. May be null.
      */
-    public Command(String firstWord, String secondWord)
+    public Command(CommandWord firstWord, String secondWord)
     {
         commandWord = firstWord;
         this.secondWord = secondWord;
     }
 
     /**
-     * Return the command word (the first word) of this command. If the
-     * command was not understood, the result is null.
+     * Return the command word (the first word) of this command.
      * @return The command word.
      */
-    public String getCommandWord()
+    public CommandWord getCommandWord()
     {
         return commandWord;
     }
